@@ -1,10 +1,10 @@
 CC = gcc
 CXX = g++
 AR = ar
-CFLAGS_DISH = -Wno-write-strings --exec-charset=UTF-8 -DHSPDISH -DHSPLINUX -DHSPDEBUG -DUSE_OBAQ
-CFLAGS_GP = -Wno-write-strings --exec-charset=UTF-8 -DHSPDISH -DHSPDISHGP -DHSPLINUX -DHSPDEBUG -I src/hsp3dish/extlib/src -I src/hsp3dish/extlib/src/glew -I src/hsp3dish/gameplay/src -std=c++11
-CFLAGS_CL = -Wno-write-strings -std=c++11 --exec-charset=UTF-8 -DHSPLINUX -DHSPDEBUG
-CFLAGS_CMP = -Wno-write-strings -std=c++11 --exec-charset=UTF-8 -DHSPLINUX -DHSPDEBUG
+CFLAGS_DISH = -g -fsanitize=address,leak,undefined -Wno-unused-function -Wno-char-subscripts -Wno-missing-field-initializers -Wno-parentheses -Wno-empty-body -Wno-type-limits -Wno-reorder -Wno-switch -Wno-unused-but-set-variable -Wno-implicit-fallthrough -Wno-ignored-qualifiers -Wno-sign-compare -Wno-unused-parameter -Wno-unused-variable -Wno-int-to-pointer-cast -Wno-write-strings --exec-charset=UTF-8 -DHSPDISH -DHSPLINUX -DHSPDEBUG -DUSE_OBAQ
+CFLAGS_GP = -g -fsanitize=address,leak,undefined -Wno-unused-function -Wno-char-subscripts -Wno-missing-field-initializers -Wno-parentheses -Wno-empty-body -Wno-type-limits -Wno-reorder -Wno-switch -Wno-unused-but-set-variable -Wno-implicit-fallthrough -Wno-ignored-qualifiers -Wno-sign-compare -Wno-unused-parameter -Wno-unused-variable -Wno-int-to-pointer-cast -Wno-write-strings --exec-charset=UTF-8 -DHSPDISH -DHSPDISHGP -DHSPLINUX -DHSPDEBUG -I src/hsp3dish/extlib/src -I src/hsp3dish/extlib/src/glew -I src/hsp3dish/gameplay/src -std=c++11
+CFLAGS_CL = -g -fsanitize=address,leak,undefined -Wno-unused-function -Wno-char-subscripts -Wno-missing-field-initializers -Wno-parentheses -Wno-empty-body -Wno-type-limits -Wno-reorder -Wno-switch -Wno-unused-but-set-variable -Wno-implicit-fallthrough -Wno-ignored-qualifiers -Wno-sign-compare -Wno-unused-parameter -Wno-unused-variable -Wno-int-to-pointer-cast -Wno-write-strings -std=c++11 --exec-charset=UTF-8 -DHSPLINUX -DHSPDEBUG
+CFLAGS_CMP = -g -fsanitize=address,leak,undefined -Wno-unused-function -Wno-char-subscripts -Wno-missing-field-initializers -Wno-parentheses -Wno-empty-body -Wno-type-limits -Wno-reorder -Wno-switch -Wno-unused-but-set-variable -Wno-implicit-fallthrough -Wno-ignored-qualifiers -Wno-sign-compare -Wno-unused-parameter -Wno-unused-variable -Wno-int-to-pointer-cast -Wno-write-strings -std=c++11 --exec-charset=UTF-8 -DHSPLINUX -DHSPDEBUG
 
 OBJS = \
 	src/hsp3/dpmread.do \
@@ -446,7 +446,7 @@ hsp3cl: $(OBJS_CL)
 	$(CXX) $(CFLAGS_CL) -c $< -o $*.o
 
 hsed: src/tools/hsed_gtk2.cpp src/tools/supio.cpp
-	$(CXX) -O2 -Wno-write-strings -o hsed src/tools/hsed_gtk2.cpp src/tools/supio.cpp `pkg-config --cflags --libs gtk+-2.0`
+	$(CXX) -g -fsanitize=address,leak,undefined -Wno-unused-function -Wno-char-subscripts -Wno-missing-field-initializers -Wno-parentheses -Wno-empty-body -Wno-type-limits -Wno-reorder -Wno-switch -Wno-unused-but-set-variable -Wno-implicit-fallthrough -Wno-ignored-qualifiers -Wno-sign-compare -Wno-unused-parameter -Wno-unused-variable -Wno-int-to-pointer-cast -Wno-write-strings -o hsed src/tools/hsed_gtk2.cpp src/tools/supio.cpp `pkg-config --cflags --libs gtk+-2.0`
 
 libgameplay.a: $(OBJS_GAMEPLAY)
 	rm -f $@
