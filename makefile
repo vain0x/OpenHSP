@@ -6,6 +6,47 @@ CFLAGS_GP = -g -fsanitize=address,leak,undefined -Wno-unused-function -Wno-char-
 CFLAGS_CL = -g -fsanitize=address,leak,undefined -Wno-unused-function -Wno-char-subscripts -Wno-missing-field-initializers -Wno-parentheses -Wno-empty-body -Wno-type-limits -Wno-reorder -Wno-switch -Wno-unused-but-set-variable -Wno-implicit-fallthrough -Wno-ignored-qualifiers -Wno-sign-compare -Wno-unused-parameter -Wno-unused-variable -Wno-int-to-pointer-cast -Wno-write-strings -std=c++11 --exec-charset=UTF-8 -DHSPLINUX -DHSPDEBUG
 CFLAGS_CMP = -g -fsanitize=address,leak,undefined -Wno-unused-function -Wno-char-subscripts -Wno-missing-field-initializers -Wno-parentheses -Wno-empty-body -Wno-type-limits -Wno-reorder -Wno-switch -Wno-unused-but-set-variable -Wno-implicit-fallthrough -Wno-ignored-qualifiers -Wno-sign-compare -Wno-unused-parameter -Wno-unused-variable -Wno-int-to-pointer-cast -Wno-write-strings -std=c++11 --exec-charset=UTF-8 -DHSPLINUX -DHSPDEBUG
 
+SRC_DISH = \
+	src/hsp3/dpmread.cpp \
+	src/hsp3dish/geometry.cpp \
+	src/hsp3/hsp3.cpp \
+	src/hsp3/hsp3code.cpp \
+	src/hsp3/hsp3debug.cpp \
+	src/hsp3dish/hsp3gr_dish.cpp \
+	src/hsp3/hsp3int.cpp \
+	src/hsp3/hspvar_core.cpp \
+	src/hsp3/hspvar_double.cpp \
+	src/hsp3/hspvar_int.cpp \
+	src/hsp3/hspvar_label.cpp \
+	src/hsp3/hspvar_str.cpp \
+	src/hsp3/hspvar_struct.cpp \
+	src/hsp3dish/hspwnd_dish.cpp \
+	src/hsp3dish/hspwnd_obj.cpp \
+	src/hsp3dish/hspwnd_edit.cpp \
+	src/hsp3dish/random.cpp \
+	src/hsp3/stack.cpp \
+	src/hsp3/strbuf.cpp \
+	src/hsp3/strnote.cpp \
+	src/hsp3/linux/hsp3ext_sock.cpp \
+	src/hsp3/linux/devctrl_io.cpp \
+	src/hsp3dish/essprite.cpp \
+	src/hsp3dish/texmes.cpp \
+	src/hsp3dish/sysreq.cpp \
+	src/hsp3dish/emscripten/hgtex.cpp \
+	src/hsp3dish/emscripten/hgiox.cpp \
+	src/hsp3dish/emscripten/mmman.cpp \
+	src/hsp3dish/emscripten/main.cpp \
+	src/hsp3dish/emscripten/stb_image.c \
+	src/hsp3dish/emscripten/fontsystem.cpp \
+	src/hsp3dish/obaq/omkedraw.cpp \
+	src/hsp3dish/obaq/hsp3dw.cpp \
+	src/hsp3dish/obaq/game.cpp \
+	src/obaq/physics/rock.cpp \
+	src/obaq/physics/vessel.cpp \
+	src/hsp3dish/linux/hsp3dish.cpp \
+	src/hsp3dish/linux/webtask_linux.cpp \
+	src/hsp3dish/linux/supio_linux.cpp
+
 OBJS = \
 	src/hsp3/dpmread.do \
 	src/hsp3dish/geometry.do \
@@ -64,6 +105,29 @@ OBJS_CMP = \
 	src/hspcmp/hsmanager.o \
 	src/hspcmp/token.o \
 	src/hspcmp/linux/supio_linux.o
+
+SRC_CL = \
+	src/hsp3/linux/main.cpp \
+	src/hsp3/hsp3.cpp \
+	src/hsp3/hsp3code.cpp \
+	src/hsp3/hsp3debug.cpp \
+	src/hsp3/hsp3int.cpp \
+	src/hsp3/hspvar_core.cpp \
+	src/hsp3/hspvar_double.cpp \
+	src/hsp3/hspvar_int.cpp \
+	src/hsp3/hspvar_label.cpp \
+	src/hsp3/hspvar_str.cpp \
+	src/hsp3/hspvar_struct.cpp \
+	src/hsp3/stack.cpp \
+	src/hsp3/strbuf.cpp \
+	src/hsp3/strnote.cpp \
+	src/hsp3/dpmread.cpp \
+	src/hsp3/linux/supio_linux.cpp \
+	src/hsp3/linux/hsp3cl.cpp \
+	src/hsp3/linux/hsp3ext_linux.cpp \
+	src/hsp3/linux/hsp3ext_sock.cpp \
+	src/hsp3/linux/devctrl_io.cpp \
+	src/hsp3/linux/hsp3gr_linux.cpp
 
 OBJS_CL = \
 	src/hsp3/linux/main.o \
@@ -418,7 +482,7 @@ all: $(TARGETS)
 
 .SUFFIXES: .cpp
 hsp3dish: $(OBJS)
-	$(CXX) $(CFLAGS_DISH) $(OBJS) -s -o $@ $(LIBS1)
+	$(CXX) $(CFLAGS_DISH) $(SRC_DISH) -o $@ $(LIBS1)
 %.do: %.c
 	$(CC) $(CFLAGS_DISH) -c $< -o $*.do
 %.do: %.cpp
@@ -439,11 +503,7 @@ hspcmp: $(OBJS_CMP)
 	$(CXX) $(CFLAGS_CMP) -c $< -o $*.o
 
 hsp3cl: $(OBJS_CL)
-	$(CXX) $(CFLAGS_CL) $(OBJS_CL) -lm -lstdc++ -s -o $@
-%.o: %.c
-	$(CC) $(CFLAGS_CL) -c $< -o $*.o
-%.o: %.cpp
-	$(CXX) $(CFLAGS_CL) -c $< -o $*.o
+	$(CXX) $(CFLAGS_CL) $(SRC_CL) -lm -lstdc++ -o $@
 
 hsed: src/tools/hsed_gtk2.cpp src/tools/supio.cpp
 	$(CXX) -g -fsanitize=address,leak,undefined -Wno-unused-function -Wno-char-subscripts -Wno-missing-field-initializers -Wno-parentheses -Wno-empty-body -Wno-type-limits -Wno-reorder -Wno-switch -Wno-unused-but-set-variable -Wno-implicit-fallthrough -Wno-ignored-qualifiers -Wno-sign-compare -Wno-unused-parameter -Wno-unused-variable -Wno-int-to-pointer-cast -Wno-write-strings -o hsed src/tools/hsed_gtk2.cpp src/tools/supio.cpp `pkg-config --cflags --libs gtk+-2.0`
@@ -466,4 +526,3 @@ libLinearMath.a: $(OBJS_LINEAR_MATH)
 
 clean:
 	rm -f $(OBJS) $(OBJS_GP) $(OBJS_CMP) $(OBJS_CL) $(OBJS_GAMEPLAY) $(TARGETS) $(LIBS_GP)
-
