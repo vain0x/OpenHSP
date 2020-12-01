@@ -5,6 +5,13 @@
 __hsptmp.*
 .hspres
 
+# Build outputs
+*.a
+/hsed
+/hsp3cl
+/hsp3dish
+/hspcmp
+
 # User-specific files
 *.rsuser
 *.suo
