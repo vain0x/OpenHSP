@@ -103,7 +103,10 @@ static void HspVarStr_Free( PVal *pval )
 	char **pp;
 	int i,size;
 	if ( pval->mode == HSPVAR_MODE_MALLOC ) {
+		int actual_size = pval->size;
 		size = GetVarSize( pval );
+		fprintf(stderr, "trace: str free size=%d, computed size=%d\n", actual_size, size);
+		size = actual_size;
 		for(i=0;i<(int)(size/sizeof(char *));i++) {
 			pp = GetFlexBufPtr( pval, i );
 			sbFree( *pp );
@@ -124,10 +127,22 @@ static void HspVarStr_Alloc( PVal *pval, const PVal *pval2 )
 	char **pp;
 	int i, i2, size, bsize;
 	PVal oldvar;
+	oldvar.size = 0;
 	if ( pval->len[1] < 1 ) pval->len[1] = 1;		// 配列を最低1は確保する
 	if ( pval2 != NULL ) oldvar = *pval2;			// 拡張時は以前の情報を保存する
 
 	size = GetVarSize( pval );
+	// fprintf(stderr, "trace: str alloc pval=%p pval2=%p size=%d (old=%d, mode=%d)\n", pval, pval2, size, oldvar.size, oldvar.mode);
+	if (pval2 != NULL && pval == pval2 && size <= oldvar.size && oldvar.mode == HSPVAR_MODE_MALLOC) {
+		pval->size = oldvar.size;
+		// fprintf(stderr, "trace:    -> reused\n");
+		return;
+	}
+
+	if (size > STRBUF_BLOCKSIZE) {
+		size += size / 8;
+	}
+	pval->size = size;
 	pval->mode = HSPVAR_MODE_MALLOC;
 	pval->master = (char *)sbAlloc( size );
 	if ( pval->master == NULL ) throw HSPERR_OUT_OF_MEMORY;
