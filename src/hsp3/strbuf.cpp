@@ -6,6 +6,7 @@
 //	(あとはsbCopy,sbAddで自動的にバッファの再確保を行ないます)
 //	onion software/onitama 2004/6
 //
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,9 +15,53 @@
 
 #include "hsp3debug.h"
 
-#define REALLOC realloc
-#define MALLOC malloc
-#define FREE free
+#define REALLOC mem_realloc
+#define MALLOC mem_alloc
+#define FREE mem_free
+
+static size_t s_current_use;
+static size_t s_total_use;
+static size_t s_alloc_count;
+static size_t s_free_count;
+static size_t s_rank = 5;
+
+static void mem_check(void) {
+	if ((s_alloc_count + s_free_count) > (1 << s_rank)) {
+		fprintf(stderr, "trace: mem_alloc count(alloc:%d free:%d) use(current:%d total:%d)\n", s_alloc_count, s_free_count, s_current_use, s_total_use);
+		s_rank++;
+	}
+}
+
+void *mem_alloc(size_t size) {
+	s_alloc_count++;
+	s_current_use += size;
+	s_total_use += size;
+	mem_check();
+
+	void *orig = malloc(size + 16);
+	// fprintf(stderr, "trace: mem_alloc orig=%p size=%d\n", orig, size);
+	assert(orig != NULL);
+	*(size_t *)orig = size;
+	return (void *)((size_t)orig + 16);
+}
+
+void mem_free(void *ptr) {
+	if (ptr != NULL) {
+		void *orig = (void *)((size_t)ptr - 16);
+		// fprintf(stderr, "trace: mem_free orig=%p size=%d\n", orig, *(size_t *)orig);
+
+		s_current_use -= *(size_t *)orig;
+		s_free_count++;
+		mem_check();
+
+		free(orig);
+	}
+}
+
+void *mem_realloc(void *ptr, size_t size) {
+	mem_free(ptr);
+	return mem_alloc(size);
+}
 
 /*------------------------------------------------------------*/
 /*
