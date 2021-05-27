@@ -108,7 +108,7 @@ static void HspVarStr_Free( PVal *pval )
 			pp = GetFlexBufPtr( pval, i );
 			sbFree( *pp );
 		}
-		free( pval->master );
+		sbFree( pval->master );
 	}
 	pval->mode = HSPVAR_MODE_NONE;
 }
@@ -129,8 +129,9 @@ static void HspVarStr_Alloc( PVal *pval, const PVal *pval2 )
 
 	size = GetVarSize( pval );
 	pval->mode = HSPVAR_MODE_MALLOC;
-	pval->master = (char *)calloc( size, 1 );
+	pval->master = (char *)sbAlloc( size );
 	if ( pval->master == NULL ) throw HSPERR_OUT_OF_MEMORY;
+	memset(pval->master, 0, size);
 
 	if ( pval2 == NULL ) {							// 配列拡張なし
 		bsize = pval->len[0];
@@ -153,7 +154,7 @@ static void HspVarStr_Alloc( PVal *pval, const PVal *pval2 )
 		}
 		sbSetOption( *pp, (void *)pp );
 	}
-	free( oldvar.master );
+	sbFree( oldvar.master );
 }
 
 
