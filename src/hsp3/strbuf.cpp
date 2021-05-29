@@ -59,8 +59,27 @@ void mem_free(void *ptr) {
 }
 
 void *mem_realloc(void *ptr, size_t size) {
-	mem_free(ptr);
-	return mem_alloc(size);
+	if (ptr == NULL) {
+		return mem_alloc(size);
+	}
+
+	void *orig = (void *)((size_t)ptr - 16);
+	size_t orig_size = *(size_t *)orig;
+
+	s_current_use += size;
+	s_current_use -= orig_size;
+	s_total_use += size;
+	s_total_use -= orig_size;
+	s_alloc_count++;
+	s_free_count++;
+	mem_check();
+
+	orig = realloc(orig, size + 16);
+	assert(orig != NULL);
+	*(size_t *)orig = size;
+
+	// fprintf(stderr, "trace: mem_realloc orig=%p size=%d\n", orig, size);
+	return (void *)((size_t)orig + 16);
 }
 
 /*------------------------------------------------------------*/
